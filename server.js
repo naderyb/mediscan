@@ -18,7 +18,12 @@ const __dirname = dirname(__filename);
 neonConfig.webSocketConstructor = ws;
 
 const app = express();
-app.use(cors({ origin: "*" }));
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://medicalscan.vercel.app"
+  ]
+}));
 app.use(express.json());
 
 // ── Static QR image serving ───────────────────────────────────────────────────
