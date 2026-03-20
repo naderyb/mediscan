@@ -868,7 +868,7 @@ function AddPatientModal({ open, onClose, onSave, saving }) {
             <input
               value={form.adresse}
               onChange={set("adresse")}
-              placeholder="Blida, Algérie"
+              placeholder="Algérie"
             />
           </div>
           <div className="form-section-title">Informations médicales</div>
@@ -1105,7 +1105,7 @@ function PrintArea({ patient: p }) {
       <div className="bracelet">
         <div className="bracelet-header">
           <div>
-            <div className="bracelet-hospital">CHU — Blida</div>
+            <div className="bracelet-hospital">CHU</div>
             <div style={{ fontSize: 9, color: "#666", marginTop: 2 }}>
               Portail MediScan
             </div>
@@ -1299,7 +1299,7 @@ export default function MediScan() {
         <div className="footer-logo">
           Medi<span>Scan</span>
         </div>
-        <p>Portail de gestion des dossiers patients — CHU Blida © 2025</p>
+        <p>Portail de gestion des dossiers patients — CHU © 2025</p>
         <p style={{ fontSize: 12, opacity: 0.5 }}>
           Système interne — Accès réservé au personnel médical
         </p>
