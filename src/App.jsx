@@ -11,7 +11,13 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { loadPatients, addPatient, scanPatient, deletePatient } from "./api.js";
+import {
+  loadPatients,
+  addPatient,
+  scanPatient,
+  deletePatient,
+  updatePatient,
+} from "./api.js";
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const COLORS = [
@@ -259,6 +265,27 @@ footer p{font-size:13px}
 .bracelet-name{font-size:14px;font-weight:700;margin-bottom:6px;line-height:1.2}
 .bracelet-detail{font-size:10px;color:#555;margin-bottom:2px}
 .bracelet-blood{display:inline-block;background:#fee;border:1px solid #c33;color:#c33;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-top:4px}
+/* Search Patients Styles */
+.search-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:20px}
+.search-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;padding:24px;background:var(--bg);border-radius:14px;border:1px solid var(--border);margin-bottom:24px}
+.filter-group{display:flex;flex-direction:column;gap:8px}
+.filter-group label{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink2)}
+.search-input{padding:10px 12px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);transition:border-color .2s;outline:none}
+.search-input:focus{border-color:var(--ink)}
+.search-results-info{font-size:14px;color:var(--ink2);margin-bottom:20px;font-weight:500}
+.search-results-grid{display:grid;gap:12px;margin-bottom:24px}
+.search-result-card{display:flex;align-items:center;gap:16px;padding:16px;background:var(--card);border-radius:12px;border:1.5px solid var(--border);cursor:pointer;transition:all .2s}
+.search-result-card:hover{border-color:var(--ink);transform:translateX(4px);box-shadow:var(--shadow)}
+.src-avatar{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:white;flex-shrink:0}
+.src-info{flex:1;min-width:0}
+.src-name{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--ink)}
+.src-id{font-size:11px;color:var(--ink3);margin-top:2px}
+.src-meta{font-size:12px;color:var(--ink2);margin-top:4px}
+.src-action{width:32px;height:32px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--ink3);flex-shrink:0}
+/* Modal Footer */
+.modal-footer{display:flex;gap:12px;justify-content:flex-end;margin-top:28px;padding-top:24px;border-top:1px solid var(--border)}
+.modal-footer .btn{margin:0}
+.form-full{grid-column:1/-1}
 @media(max-width:900px){
   .nav{padding:16px 24px}
   .hero{grid-template-columns:1fr;padding:100px 24px 60px;gap:48px}
@@ -269,6 +296,7 @@ footer p{font-size:13px}
   .dossier-hero{flex-direction:column}
   .form-grid{grid-template-columns:1fr}
   .form-group.full{grid-column:1}
+  .search-filters{grid-template-columns:1fr}
   footer{padding:32px 24px}
 }
 `;
@@ -956,7 +984,7 @@ function AddPatientModal({ open, onClose, onSave, saving }) {
 }
 
 // ─── DOSSIER MODAL ────────────────────────────────────────────────────────────
-function DossierModal({ patient: p, open, onClose, onPrint }) {
+function DossierModal({ patient: p, open, onClose, onPrint, onEdit }) {
   const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
   if (!p) return null;
   const m = p.medical || {};
@@ -1033,10 +1061,19 @@ function DossierModal({ patient: p, open, onClose, onPrint }) {
               </div>
             )}
             <div className="qr-label">QR Bracelet</div>
-            <button className="print-qr-btn" onClick={() => onPrint(p)}>
-              <Icons.Print />
-              Imprimer bracelet
-            </button>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button className="print-qr-btn" onClick={() => onPrint(p)}>
+                <Icons.Print />
+                Imprimer bracelet
+              </button>
+              <button
+                className="print-qr-btn"
+                onClick={() => onEdit(p)}
+                style={{ background: "var(--blue)" }}
+              >
+                ✎ Modifier
+              </button>
+            </div>
           </div>
         </div>
         <div className="dossier-sections">
@@ -1094,6 +1131,330 @@ function DossierModal({ patient: p, open, onClose, onPrint }) {
   );
 }
 
+// ─── EDIT DOSSIER MODAL ───────────────────────────────────────────────────────
+function EditDossierModal({ patient: p, open, onClose, onSave, saving }) {
+  const [form, setForm] = useState(EMPTY_FORM);
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  useEffect(() => {
+    if (p && open) {
+      setForm({
+        prenom: p.prenom || "",
+        nom: p.nom || "",
+        dob: p.dob || "",
+        sexe: p.sexe || "M",
+        sang: p.sang || "A+",
+        admission: p.admission || "",
+        medecin: p.medecin || "",
+        service: p.service || "",
+        chronique: p.medical?.chronique || "",
+        allergies: p.medical?.allergies || "",
+        traitements: p.medical?.traitements || "",
+        notes: p.medical?.notes || "",
+        tel: p.tel || "",
+        adresse: p.adresse || "",
+      });
+    }
+  }, [p, open]);
+
+  const handleSave = async () => {
+    if (!form.prenom.trim() || !form.nom.trim()) {
+      alert("Le prénom et le nom sont obligatoires.");
+      return;
+    }
+    onSave(form);
+  };
+
+  return (
+    <div
+      className={`modal-overlay no-print ${open ? "open" : ""}`}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="modal">
+        <div className="modal-header">
+          <div>
+            <div className="modal-title">Modifier le dossier patient</div>
+            <div className="modal-sub">Dossier N° {p?.display_id}</div>
+          </div>
+          <button className="close-btn" onClick={onClose}>
+            ✕
+          </button>
+        </div>
+        <div className="form-grid">
+          <div className="form-section-title">Identité</div>
+          <div className="form-group">
+            <label>Prénom *</label>
+            <input
+              value={form.prenom}
+              onChange={set("prenom")}
+              placeholder="Ahmed"
+            />
+          </div>
+          <div className="form-group">
+            <label>Nom *</label>
+            <input
+              value={form.nom}
+              onChange={set("nom")}
+              placeholder="Meziani"
+            />
+          </div>
+          <div className="form-group">
+            <label>Date de naissance</label>
+            <input type="date" value={form.dob} onChange={set("dob")} />
+          </div>
+          <div className="form-group">
+            <label>Sexe</label>
+            <select value={form.sexe} onChange={set("sexe")}>
+              <option value="M">Masculin</option>
+              <option value="F">Féminin</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Téléphone</label>
+            <input
+              value={form.tel}
+              onChange={set("tel")}
+              placeholder="0555 00 00 00"
+            />
+          </div>
+          <div className="form-group">
+            <label>Adresse</label>
+            <input
+              value={form.adresse}
+              onChange={set("adresse")}
+              placeholder="Algérie"
+            />
+          </div>
+          <div className="form-section-title">Informations médicales</div>
+          <div className="form-group">
+            <label>Groupe sanguin *</label>
+            <select value={form.sang} onChange={set("sang")}>
+              {BLOOD_GROUPS.map((b) => (
+                <option key={b}>{b}</option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Date d'admission</label>
+            <input
+              type="date"
+              value={form.admission}
+              onChange={set("admission")}
+            />
+          </div>
+          <div className="form-group">
+            <label>Médecin traitant</label>
+            <input
+              value={form.medecin}
+              onChange={set("medecin")}
+              placeholder="Dr. Benali Sofiane"
+            />
+          </div>
+          <div className="form-group">
+            <label>Service / Unité</label>
+            <select value={form.service} onChange={set("service")}>
+              {SERVICES.map((s) => (
+                <option key={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Maladies chroniques</label>
+            <input
+              value={form.chronique}
+              onChange={set("chronique")}
+              placeholder="Diabète, Hypertension (séparées par des virgules)"
+            />
+          </div>
+          <div className="form-group">
+            <label>Allergies</label>
+            <input
+              value={form.allergies}
+              onChange={set("allergies")}
+              placeholder="Pénicilline, Sulfamides (séparées par des virgules)"
+            />
+          </div>
+          <div className="form-group form-full">
+            <label>Traitements en cours</label>
+            <textarea
+              value={form.traitements}
+              onChange={set("traitements")}
+              placeholder="Antibiothérapie, Anti-inflammatoires..."
+              rows="4"
+            />
+          </div>
+          <div className="form-group form-full">
+            <label>Notes &amp; Observations</label>
+            <textarea
+              value={form.notes}
+              onChange={set("notes")}
+              placeholder="Notes additionnelles..."
+              rows="3"
+            />
+          </div>
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-secondary" onClick={onClose}>
+            Annuler
+          </button>
+          <button
+            className="btn btn-primary"
+            onClick={handleSave}
+            disabled={saving}
+          >
+            {saving ? "Enregistrement..." : "Enregistrer les modifications"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── SEARCH PATIENTS ──────────────────────────────────────────────────────────
+function SearchPatients({ patients, onPatientSelect }) {
+  const [searchName, setSearchName] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+
+  const filteredPatients = patients.filter((p) => {
+    const nameMatch = `${p.prenom} ${p.nom}`
+      .toLowerCase()
+      .includes(searchName.toLowerCase());
+
+    let dateMatch = true;
+    if (startDate || endDate) {
+      const admission = new Date(p.admission);
+      if (startDate) {
+        const start = new Date(startDate);
+        dateMatch = dateMatch && admission >= start;
+      }
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59);
+        dateMatch = dateMatch && admission <= end;
+      }
+    }
+
+    return nameMatch && dateMatch;
+  });
+
+  return (
+    <section className="section section-surface no-print" id="search">
+      <div className="section-inner">
+        <div className="search-header">
+          <div>
+            <div className="section-label">Recherche</div>
+            <div className="section-title">Chercher un patient</div>
+          </div>
+          <button
+            className={`btn ${showSearch ? "btn-secondary" : "btn-primary"}`}
+            onClick={() => setShowSearch(!showSearch)}
+          >
+            {showSearch ? "Masquer la recherche" : "Afficher la recherche"}
+          </button>
+        </div>
+
+        {showSearch && (
+          <div className="search-filters">
+            <div className="filter-group">
+              <label>Nom ou Prénom</label>
+              <input
+                type="text"
+                placeholder="Entrez le nom ou prénom..."
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+                className="search-input"
+              />
+            </div>
+            <div className="filter-group">
+              <label>Date d'admission (De)</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="search-input"
+              />
+            </div>
+            <div className="filter-group">
+              <label>Date d'admission (À)</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="search-input"
+              />
+            </div>
+            <button
+              className="btn btn-secondary"
+              onClick={() => {
+                setSearchName("");
+                setStartDate("");
+                setEndDate("");
+              }}
+            >
+              Réinitialiser
+            </button>
+          </div>
+        )}
+
+        {showSearch && (
+          <>
+            <div className="search-results-info">
+              {searchName || startDate || endDate ? (
+                <p>{filteredPatients.length} patient(s) trouvé(s)</p>
+              ) : (
+                <p style={{ color: "var(--ink3)" }}>
+                  Entrez un critère de recherche
+                </p>
+              )}
+            </div>
+
+            {filteredPatients.length > 0 ? (
+              <div className="search-results-grid">
+                {filteredPatients.map((p, i) => (
+                  <div
+                    key={p.id}
+                    className="search-result-card"
+                    onClick={() => onPatientSelect(p.id)}
+                  >
+                    <div
+                      className="src-avatar"
+                      style={{
+                        background: p.color || COLORS[i % COLORS.length],
+                      }}
+                    >
+                      {initials(p)}
+                    </div>
+                    <div className="src-info">
+                      <div className="src-name">
+                        {p.prenom} {p.nom}
+                      </div>
+                      <div className="src-id">{p.display_id}</div>
+                      <div className="src-meta">
+                        📅 {formatDate(p.admission)} · 🏥 {p.service || "—"}
+                      </div>
+                    </div>
+                    <div className="src-action">
+                      <Icons.File />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : searchName || startDate || endDate ? (
+              <div className="empty-state">
+                <p>Aucun patient ne correspond à votre recherche.</p>
+              </div>
+            ) : null}
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
 // ─── PRINT BRACELET ───────────────────────────────────────────────────────────
 // Uses qrcodejs (CDN) to render QR inline for printing
 function PrintArea({ patient: p }) {
@@ -1147,6 +1508,8 @@ export default function MediScan() {
   const [dossierPatient, setDossierPatient] = useState(null);
   const [printPatient, setPrintPatient] = useState(null);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [editPatient, setEditPatient] = useState(null);
+  const [editOpen, setEditOpen] = useState(false);
 
   // Inject global styles + CDN scripts
   useEffect(() => {
@@ -1204,6 +1567,31 @@ export default function MediScan() {
     }
   };
 
+  const handleEditDossier = async (form) => {
+    if (!editPatient) return;
+    setSaving(true);
+    try {
+      const updatedPatient = await updatePatient(editPatient.id, form);
+      // Add color back to the updated patient
+      const colored = {
+        ...updatedPatient,
+        color: editPatient.color,
+      };
+      // Update patients list
+      setPatients((prev) =>
+        prev.map((p) => (p.id === editPatient.id ? colored : p)),
+      );
+      // Update dossier view
+      setDossierPatient(colored);
+      setEditOpen(false);
+      alert("Dossier mis à jour avec succès !");
+    } catch (e) {
+      alert(e.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   function playBeep() {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const oscillator = ctx.createOscillator();
@@ -1220,7 +1608,7 @@ export default function MediScan() {
 
   const handleScanResult = useCallback(
     async (scannedId) => {
-        playBeep();
+      playBeep();
       const found = await scanPatient(scannedId);
       if (found) {
         // Merge color from local state if available
@@ -1286,6 +1674,12 @@ export default function MediScan() {
         onNewPatient={() => setAddOpen(true)}
       />
       <ScannerSection onPatientFound={handleScanResult} />
+      <SearchPatients
+        patients={patients}
+        onPatientSelect={(id) =>
+          setDossierPatient(patients.find((p) => p.id === id) || null)
+        }
+      />
       <PatientsSection
         patients={patients}
         onNewPatient={() => setAddOpen(true)}
@@ -1316,6 +1710,20 @@ export default function MediScan() {
         open={!!dossierPatient}
         onClose={() => setDossierPatient(null)}
         onPrint={handlePrint}
+        onEdit={(p) => {
+          setEditPatient(p);
+          setEditOpen(true);
+        }}
+      />
+      <EditDossierModal
+        patient={editPatient}
+        open={editOpen}
+        onClose={() => {
+          setEditOpen(false);
+          setEditPatient(null);
+        }}
+        onSave={handleEditDossier}
+        saving={saving}
       />
       {printPatient && <PrintArea patient={printPatient} />}
     </>
