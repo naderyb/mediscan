@@ -1069,7 +1069,7 @@ function DossierModal({ patient: p, open, onClose, onPrint, onEdit }) {
               <button
                 className="print-qr-btn"
                 onClick={() => onEdit(p)}
-                style={{ background: "var(--blue)" }}
+                style={{ background: "var(--blue)", color: "white" }}
               >
                 ✎ Modifier
               </button>
