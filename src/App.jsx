@@ -269,7 +269,8 @@ footer p{font-size:13px}
 .bracelet-header{display:flex;align-items:center;gap:.16cm;border-bottom:1px solid #ddd;padding-bottom:.06cm;margin-bottom:.08cm;line-height:1}
 .bracelet-hospital{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
 .bracelet-body{display:flex;gap:.18cm;align-items:stretch}
-.bracelet-qr{width:2.2cm;height:2.2cm;flex-shrink:0;background:#fff;padding:0;border:1px solid #111;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.bracelet-qr{width:2.3cm;height:2.3cm;flex-shrink:0;background:#fff;padding:.02cm;border:1.5px solid #111;display:block;overflow:hidden}
+.bracelet-qr canvas,.bracelet-qr img{width:100%!important;height:100%!important;display:block!important}
 .bracelet-info{flex:1}
 .bracelet-name{font-size:12px;font-weight:700;margin-bottom:2px;line-height:1.1}
 .bracelet-detail{font-size:9px;color:#555;margin-bottom:1px;line-height:1.1}
