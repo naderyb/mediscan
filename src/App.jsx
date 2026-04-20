@@ -1475,15 +1475,6 @@ function PrintArea({ patient: p }) {
     <div id="print-area" className="print-only">
       <div className="bracelet">
         <div className="bracelet-header">
-          <div>
-            <div className="bracelet-hospital">CHU</div>
-            <div style={{ fontSize: 9, color: "#666", marginTop: 2 }}>
-              Portail MediScan
-            </div>
-          </div>
-          <div style={{ marginLeft: "auto", fontSize: 10, color: "#888" }}>
-            {p.display_id}
-          </div>
         </div>
         <div className="bracelet-body">
           <div ref={qrRef} className="bracelet-qr" />
