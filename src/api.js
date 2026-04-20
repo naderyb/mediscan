@@ -1,5 +1,5 @@
 /**
- * MediScan — API Client
+ * MediScan - API Client
  * ─────────────────────
  * Place this file at:  mediscan/frontend/src/api.js
  *

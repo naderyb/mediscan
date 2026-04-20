@@ -1,5 +1,5 @@
 /**
- * MediScan — Portail Hospitalier
+ * MediScan - Portail Hospitalier
  * ────────────────────────────────
  * Place this file at:  mediscan/frontend/src/MediScan.jsx
  *
@@ -46,7 +46,7 @@ const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const initials = (p) => (p.prenom[0] + p.nom[0]).toUpperCase();
 
 const ageFromDob = (dob) => {
-  if (!dob) return "—";
+  if (!dob) return "-";
   return (
     Math.floor((Date.now() - new Date(dob)) / (1000 * 60 * 60 * 24 * 365.25)) +
     " ans"
@@ -54,7 +54,7 @@ const ageFromDob = (dob) => {
 };
 
 const formatDate = (d) => {
-  if (!d) return "—";
+  if (!d) return "-";
   return new Date(d).toLocaleDateString("fr-FR", {
     day: "numeric",
     month: "long",
@@ -69,7 +69,7 @@ const getServiceBadgeClass = (s = "") => {
   return "badge-standard";
 };
 
-// QR for PRINT only (uses qrcodejs CDN — still needed for the bracelet printout)
+// QR for PRINT only (uses qrcodejs CDN - still needed for the bracelet printout)
 function usePrintQR(containerRef, text, size = 220) {
   useEffect(() => {
     if (!containerRef.current || !text || !window.QRCode) return;
@@ -461,7 +461,7 @@ function HeroCard() {
             </div>
             <div className="hc-qr-text">
               <strong>Bracelet QR généré</strong>
-              Imprimable — Format bracelet opératoire
+              Imprimable - Format bracelet opératoire
               <br />
               <span
                 style={{
@@ -592,7 +592,7 @@ function ScannerSection({ onPatientFound }) {
       }
       setActive(true);
       setBoxState("scanning");
-      setStatus("Caméra active — scan en cours...");
+      setStatus("Caméra active - scan en cours...");
       intervalRef.current = setInterval(scanFrame, 300);
     } catch (e) {
       alert("Caméra inaccessible: " + e.message);
@@ -722,7 +722,7 @@ function PatientCard({ patient: p, idx, onOpen, onPrint }) {
           <div className="pc-id">{p.display_id}</div>
         </div>
         <div className={`pc-badge ${getServiceBadgeClass(p.service)}`}>
-          {p.service || "—"}
+          {p.service || "-"}
         </div>
       </div>
       <div className="pc-details">
@@ -736,7 +736,7 @@ function PatientCard({ patient: p, idx, onOpen, onPrint }) {
         </div>
         <div className="pc-detail">
           <label>Médecin</label>
-          <span>{p.medecin || "—"}</span>
+          <span>{p.medecin || "-"}</span>
         </div>
         <div className="pc-detail">
           <label>Admission</label>
@@ -1043,8 +1043,8 @@ function DossierModal({ patient: p, open, onClose, onPrint, onEdit }) {
               <div className="meta-tag">
                 👤 {ageFromDob(p.dob)} · {p.sexe === "M" ? "Homme" : "Femme"}
               </div>
-              <div className="meta-tag">🏥 {p.service || "—"}</div>
-              <div className="meta-tag">👨‍⚕️ {p.medecin || "—"}</div>
+              <div className="meta-tag">🏥 {p.service || "-"}</div>
+              <div className="meta-tag">👨‍⚕️ {p.medecin || "-"}</div>
             </div>
           </div>
           <div className="dossier-qr-section">
@@ -1108,11 +1108,11 @@ function DossierModal({ patient: p, open, onClose, onPrint, onEdit }) {
             <h4>Coordonnées</h4>
             <div className="ds-row">
               <span className="ds-label">Téléphone</span>
-              <span className="ds-value">{p.tel || "—"}</span>
+              <span className="ds-value">{p.tel || "-"}</span>
             </div>
             <div className="ds-row">
               <span className="ds-label">Adresse</span>
-              <span className="ds-value">{p.adresse || "—"}</span>
+              <span className="ds-value">{p.adresse || "-"}</span>
             </div>
             <div className="ds-row">
               <span className="ds-label">Date de naissance</span>
@@ -1444,7 +1444,7 @@ function SearchPatients({ patients, onPatientSelect }) {
                       </div>
                       <div className="src-id">{p.display_id}</div>
                       <div className="src-meta">
-                        📅 {formatDate(p.admission)} · 🏥 {p.service || "—"}
+                        📅 {formatDate(p.admission)} · 🏥 {p.service || "-"}
                       </div>
                     </div>
                     <div className="src-action">
@@ -1474,8 +1474,7 @@ function PrintArea({ patient: p }) {
   return (
     <div id="print-area" className="print-only">
       <div className="bracelet">
-        <div className="bracelet-header">
-        </div>
+        <div className="bracelet-header"></div>
         <div className="bracelet-body">
           <div ref={qrRef} className="bracelet-qr" />
           <div className="bracelet-info">
@@ -1694,9 +1693,9 @@ export default function MediScan() {
         <div className="footer-logo">
           Medi<span>Scan</span>
         </div>
-        <p>Portail de gestion des dossiers patients — CHU © 2025</p>
+        <p>Portail de gestion des dossiers patients - CHU © 2025</p>
         <p style={{ fontSize: 12, opacity: 0.5 }}>
-          Système interne — Accès réservé au personnel médical
+          Système interne - Accès réservé au personnel médical
         </p>
       </footer>
 

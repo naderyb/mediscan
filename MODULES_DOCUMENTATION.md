@@ -1,4 +1,4 @@
-# MediScan — Documentation des Nouveaux Modules
+# MediScan - Documentation des Nouveaux Modules
 
 ## 📋 Modules Ajoutés
 
