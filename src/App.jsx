@@ -265,11 +265,11 @@ footer p{font-size:13px}
   #print-area *{visibility:visible}
 }
 #print-area{display:none}
-.bracelet{width:19cm;height:2.5cm;box-sizing:border-box;overflow:hidden;background:white;border:1px solid #333;border-radius:.22cm;padding:.14cm .2cm;font-family:'DM Sans',sans-serif}
+.bracelet{width:19cm;height:2.8cm;box-sizing:border-box;overflow:hidden;background:white;border:1px solid #333;border-radius:.22cm;padding:.14cm .2cm;font-family:'DM Sans',sans-serif}
 .bracelet-header{display:flex;align-items:center;gap:.16cm;border-bottom:1px solid #ddd;padding-bottom:.06cm;margin-bottom:.08cm;line-height:1}
 .bracelet-hospital{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
-.bracelet-body{display:flex;gap:.18cm;align-items:center}
-.bracelet-qr{width:1.95cm;height:1.95cm;flex-shrink:0;background:#fff;padding:.06cm;border:1px solid #111;display:flex;align-items:center;justify-content:center}
+.bracelet-body{display:flex;gap:.18cm;align-items:stretch}
+.bracelet-qr{width:2.2cm;height:2.2cm;flex-shrink:0;background:#fff;padding:0;border:1px solid #111;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .bracelet-info{flex:1}
 .bracelet-name{font-size:12px;font-weight:700;margin-bottom:2px;line-height:1.1}
 .bracelet-detail{font-size:9px;color:#555;margin-bottom:1px;line-height:1.1}
@@ -1468,7 +1468,7 @@ function SearchPatients({ patients, onPatientSelect }) {
 // Uses qrcodejs (CDN) to render QR inline for printing
 function PrintArea({ patient: p }) {
   const qrRef = useRef(null);
-  usePrintQR(qrRef, p?.display_id, 220);
+  usePrintQR(qrRef, p?.display_id, 300);
   if (!p) return null;
   return (
     <div id="print-area" className="print-only">
