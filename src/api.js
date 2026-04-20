@@ -1,18 +1,6 @@
-/**
- * MediScan - API Client
- * ─────────────────────
- * Place this file at:  mediscan/frontend/src/api.js
- *
- * This replaces all localStorage usage in MediScan.jsx.
- * The API base URL is read from the Vite env variable VITE_API_URL.
- * Create frontend/.env with:
- *   VITE_API_URL=http://localhost:3001
- */
-
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 // ─── Load all patients ────────────────────────────────────────────────────────
-// Replaces: JSON.parse(localStorage.getItem("mediscan_patients")) || DEMO_PATIENTS
 export async function loadPatients() {
   const res = await fetch(`${BASE}/api/patients`);
   if (!res.ok) throw new Error("Erreur chargement patients");
@@ -20,8 +8,6 @@ export async function loadPatients() {
 }
 
 // ─── Create a new patient ─────────────────────────────────────────────────────
-// Replaces: setPatients([...patients, newPatient])
-// Returns the full patient object including { qr: { qr_image_url } }
 export async function addPatient(form) {
   const res = await fetch(`${BASE}/api/patients`, {
     method: "POST",
@@ -50,7 +36,6 @@ export async function updatePatient(id, form) {
 }
 
 // ─── Delete a patient ─────────────────────────────────────────────────────────
-// Replaces: setPatients(patients.filter(p => p.id !== id))
 export async function deletePatient(id) {
   const res = await fetch(`${BASE}/api/patients/${id}`, { method: "DELETE" });
   if (!res.ok) throw new Error("Erreur suppression patient");
@@ -65,9 +50,6 @@ export async function getPatient(id) {
 }
 
 // ─── QR Scan → fetch patient dossier ─────────────────────────────────────────
-// Replaces: patients.find(p => p.id === scannedId)
-// Call this from handleScanResult(scannedId) in ScannerSection
-// Returns full dossier { ...patient, medical, qr } or null if not found
 export async function scanPatient(displayId) {
   const res = await fetch(`${BASE}/api/scan/${displayId}`);
   if (!res.ok) return null;
@@ -75,7 +57,6 @@ export async function scanPatient(displayId) {
 }
 
 // ─── Regenerate QR (lost bracelet) ───────────────────────────────────────────
-// Returns new { qr_image_url, payload, ... }
 export async function regenerateQR(patientUuid) {
   const res = await fetch(`${BASE}/api/patients/${patientUuid}/qr`, {
     method: "POST",
