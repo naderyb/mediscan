@@ -256,15 +256,15 @@ footer p{font-size:13px}
   #print-area *{visibility:visible}
 }
 #print-area{display:none}
-.bracelet{width:320px;background:white;border:2px solid #333;border-radius:12px;padding:16px;font-family:'DM Sans',sans-serif}
-.bracelet-header{display:flex;align-items:center;gap:10px;border-bottom:1px solid #ddd;padding-bottom:12px;margin-bottom:12px}
-.bracelet-hospital{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
-.bracelet-body{display:flex;gap:14px}
-.bracelet-qr{width:100px;height:100px;flex-shrink:0}
+.bracelet{width:19cm;height:2.5cm;box-sizing:border-box;overflow:hidden;background:white;border:1px solid #333;border-radius:.22cm;padding:.14cm .2cm;font-family:'DM Sans',sans-serif}
+.bracelet-header{display:flex;align-items:center;gap:.16cm;border-bottom:1px solid #ddd;padding-bottom:.06cm;margin-bottom:.08cm;line-height:1}
+.bracelet-hospital{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.bracelet-body{display:flex;gap:.18cm;align-items:center}
+.bracelet-qr{width:1.95cm;height:1.95cm;flex-shrink:0}
 .bracelet-info{flex:1}
-.bracelet-name{font-size:14px;font-weight:700;margin-bottom:6px;line-height:1.2}
-.bracelet-detail{font-size:10px;color:#555;margin-bottom:2px}
-.bracelet-blood{display:inline-block;background:#fee;border:1px solid #c33;color:#c33;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-top:4px}
+.bracelet-name{font-size:12px;font-weight:700;margin-bottom:2px;line-height:1.1}
+.bracelet-detail{font-size:9px;color:#555;margin-bottom:1px;line-height:1.1}
+.bracelet-blood{display:inline-block;background:#fee;border:1px solid #c33;color:#c33;border-radius:4px;padding:0 5px;font-size:9px;font-weight:700;margin-top:2px;line-height:1.2}
 /* Search Patients Styles */
 .search-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:20px}
 .search-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;padding:24px;background:var(--bg);border-radius:14px;border:1px solid var(--border);margin-bottom:24px}
@@ -1459,7 +1459,7 @@ function SearchPatients({ patients, onPatientSelect }) {
 // Uses qrcodejs (CDN) to render QR inline for printing
 function PrintArea({ patient: p }) {
   const qrRef = useRef(null);
-  usePrintQR(qrRef, p?.display_id, 100);
+  usePrintQR(qrRef, p?.display_id, 76);
   if (!p) return null;
   return (
     <div id="print-area" className="print-only">
