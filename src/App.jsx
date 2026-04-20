@@ -70,18 +70,27 @@ const getServiceBadgeClass = (s = "") => {
 };
 
 // QR for PRINT only (uses qrcodejs CDN — still needed for the bracelet printout)
-function usePrintQR(containerRef, text, size = 100) {
+function usePrintQR(containerRef, text, size = 220) {
   useEffect(() => {
     if (!containerRef.current || !text || !window.QRCode) return;
     containerRef.current.innerHTML = "";
+    containerRef.current.style.lineHeight = "0";
     new window.QRCode(containerRef.current, {
       text,
       width: size,
       height: size,
       colorDark: "#000000",
       colorLight: "#ffffff",
-      correctLevel: window.QRCode?.CorrectLevel?.H,
+      correctLevel: window.QRCode?.CorrectLevel?.M,
     });
+
+    const qrNode = containerRef.current.querySelector("img,canvas");
+    if (qrNode) {
+      qrNode.style.width = "100%";
+      qrNode.style.height = "100%";
+      qrNode.style.display = "block";
+      qrNode.style.imageRendering = "pixelated";
+    }
   }, [text, size, containerRef]);
 }
 
@@ -260,7 +269,7 @@ footer p{font-size:13px}
 .bracelet-header{display:flex;align-items:center;gap:.16cm;border-bottom:1px solid #ddd;padding-bottom:.06cm;margin-bottom:.08cm;line-height:1}
 .bracelet-hospital{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
 .bracelet-body{display:flex;gap:.18cm;align-items:center}
-.bracelet-qr{width:1.95cm;height:1.95cm;flex-shrink:0}
+.bracelet-qr{width:1.95cm;height:1.95cm;flex-shrink:0;background:#fff;padding:.06cm;border:1px solid #111;display:flex;align-items:center;justify-content:center}
 .bracelet-info{flex:1}
 .bracelet-name{font-size:12px;font-weight:700;margin-bottom:2px;line-height:1.1}
 .bracelet-detail{font-size:9px;color:#555;margin-bottom:1px;line-height:1.1}
@@ -1459,7 +1468,7 @@ function SearchPatients({ patients, onPatientSelect }) {
 // Uses qrcodejs (CDN) to render QR inline for printing
 function PrintArea({ patient: p }) {
   const qrRef = useRef(null);
-  usePrintQR(qrRef, p?.display_id, 76);
+  usePrintQR(qrRef, p?.display_id, 220);
   if (!p) return null;
   return (
     <div id="print-area" className="print-only">
@@ -1482,13 +1491,13 @@ function PrintArea({ patient: p }) {
               {p.prenom} {p.nom}
             </div>
             <div className="bracelet-detail">
-              📅 Admission: {formatDate(p.admission)}
+              Admission: {formatDate(p.admission)}
             </div>
-            <div className="bracelet-detail">👨‍⚕️ {p.medecin || "—"}</div>
-            <div className="bracelet-detail">🏥 {p.service || "—"}</div>
+            <div className="bracelet-detail">Medecin: {p.medecin || "-"}</div>
+            <div className="bracelet-detail">Service: {p.service || "-"}</div>
             {p.medical?.allergies && p.medical.allergies !== "Aucune" && (
               <div className="bracelet-detail" style={{ color: "#c33" }}>
-                ⚠️ Allergie: {p.medical.allergies}
+                Allergie: {p.medical.allergies}
               </div>
             )}
             <div className="bracelet-blood">{p.sang}</div>
